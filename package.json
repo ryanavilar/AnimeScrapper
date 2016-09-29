@@ -1,0 +1,24 @@
+{
+  "name": "animeproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "latest",
+    "ejs": "^2.5.2",
+    "express": "latest",
+    "request": "latest",
+    "request-promise": "^4.1.1",
+    "video.js": "^5.11.7",
+    "vlc": "0.0.4",
+    "vlc-node": "0.0.2"
+  },
+  "devDependencies": {
+    "video.js": "^5.11.7"
+  }
+}
