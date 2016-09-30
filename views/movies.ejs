@@ -43,7 +43,7 @@
       <video id="videoPlay" class="video-js vjs-default-skin vjs-big-play-centered"
       controls preload="auto" width="640" height="264"
       data-setup='{}'>
-      <source  src= "http://d5535.allmyvideos.net/d/7kmh5mmmyq5dh6ln37ejdnmfgjmygphmehfpi56e42u3sxqmhd7gmaf2xeeuwxa/video.mp4?v2" type="video/mp4" />
+      <source src= "http://d5535.allmyvideos.net/d/7kmh5mmmyq5dh6ln37ejdnmfgjmygphmehfpi56e42u3sxqmhd7gmaf2xeeuwxa/video.mp4?v2" type="video/mp4" />
       <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
     </video>
   </div>
@@ -129,7 +129,6 @@
             // You can look at the doc there: http://docs.videojs.com/docs/guides/api.html
             videojs('videoPlay').ready(function () {
               var myPlayer = this;
-              myPlayer.src({type: 'video/youtube', src: 'https://www.youtube.com/watch?v=y6Sxv-sUYtM'});
 
               $('.pick').click(function(e){
                 $.ajax({

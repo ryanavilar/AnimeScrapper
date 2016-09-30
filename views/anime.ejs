@@ -1,86 +1,111 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Anime Scrapping</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link href="//vjs.zencdn.net/5.4.6/video-js.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <title>Anime Scrapping</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link href="//vjs.zencdn.net/5.4.6/video-js.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="/ripple.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+  <style type="text/css">
+    .video-js{
+      width: 100% !important;
+      height: 80vh;
+    }
+    .movie-search{
+      width: 100% !important;
+    }
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
-    <style type="text/css">
-        .video-js{
-            width: 100% !important;
-            height: 80vh;
-        }
-        .anime-search{
-            width: 100% !important;
-        }
+    .select2{
+      margin-bottom: 1em;
+    }
 
-        .select2{
-            margin-bottom: 1em;
-        }
-    </style>
+    .episodes-picker{
+      height: 70vh;
+      overflow-y: scroll;
+    }
+
+    .clicked{
+      background-color: grey;
+      color: #ffffff;
+    }
+
+    .loading-video{
+      display: block;
+      margin: 0 auto;
+      width: 40vw;
+      height: 40vw;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
+  <div class="container">
 
     <h1 class="text-center"> Anime Scrapper</h1>
 
-        <select class="anime-search">
-          <option value="3620194" selected="selected"><%= name %></option>
-        </select>
-        <div class="hidden loading">
-           <h1> Loading...</h1>
-        </div>
+    <select class="movie-search">
+      <option value="3620194" selected="selected"><%= name %></option>
+    </select>
+    <div class="hidden loading">
+     <h1> Loading...</h1>
+   </div>
 
-        <div class="panel-group" id="accordion">
-            <% for(var j=0; j< videos.length; j++) { %>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse-<%= j %>">
-                        <%= videos[j].name %></a>
-                    </h4>
-                </div>
-                <div id="collapse-<%= j %>" class="panel-collapse collapse">
-                  <div class="panel-body">
-                     <video id="videoPlay-<%= j %>" class="video-js vjs-default-skin vjs-big-play-centered"
-                      controls preload="auto" width="640" height="264"
-                      data-setup='{}'>
-                      <source src="<%= videos[j].file %>" type="video/mp4" />
-                         <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
-                     </video>
-                 </div>
-             </div>
-         </div>
+   <div class="row">
+
+    <div class="col-xs-8">
+    <div class="uil-ripple-css loading-video hidden" style="transform:scale(0.49);"><div></div><div></div></div>
+      <video id="videoPlay" class="video-js vjs-default-skin vjs-big-play-centered"
+      controls preload="auto" width="640" height="264"
+      data-setup='{}'>
+      <source src= "<%= video %>" type="video/mp4" />
+      <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+    </video>
+  </div>
+
+  <div class="col-xs-4 ">
+    <h3>Episodes Pick</h3>
+    <div class="episodes-picker">
+      <table style="width: 100%">
+      <tr>
+          <td><a class="btn btn-default pick clicked" style="width: 100%;border-color:transparent !important"><%= episodes[0] %></a></td>
+        </tr>
+        <% for(var j=1; j< episodes.length; j++) { %>
+        <tr>
+          <td><a class=" btn btn-default pick" style="width: 100%; border-color:transparent !important;"><%= episodes[j] %></a></td>
+        </tr>
+        <% } %>
+      </table>
+
+    </div>
+
+  </div>
+</div>
 
 
-
-         <% } %>
-     </div>
- </div>
+</div>
+</div>
 
 
- <script   src="https://code.jquery.com/jquery-2.2.4.min.js"   integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="   crossorigin="anonymous"></script>
- <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
- <script src="//vjs.zencdn.net/5.4.6/video.min.js"></script>
+<script   src="https://code.jquery.com/jquery-2.2.4.min.js"   integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="   crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="//vjs.zencdn.net/5.4.6/video.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
 
 <script type="text/javascript">
-$(".anime-search").select2({
-        placeholder: 'Cari Nama Anime',
-        ajax: {
-            type: 'POST',
-            url: "/search",
-            dataType: 'json',
-            delay: 500,
-            data: function (params) {
-                console.log(params);
-                return {
-                    q : params.term
-                };
-            },
-            processResults: function (data, params) {
+  $(".movie-search").select2({
+    placeholder: 'Cari Nama Anime',
+    ajax: {
+      type: 'POST',
+      url: "/search",
+      dataType: 'json',
+      delay: 500,
+      data: function (params) {
+        console.log(params);
+        return {
+          q : params.term
+        };
+      },
+      processResults: function (data, params) {
                 // parse the results into the format expected by Select2
                 // since we are using custom formatting functions we do not need to
                 // alter the remote JSON data, except to indicate that infinite
@@ -88,31 +113,67 @@ $(".anime-search").select2({
                 console.log(data);
                 var result = data;
                 for(i = 0;i< data.length;i++){
-                    data[i].text = data[i].name;
-                    data[i].id = JSON.stringify(data[i]);
+                  data[i].text = data[i].name;
+                  data[i].id = JSON.stringify(data[i]);
                 }            
                 return {
-                    results: data
+                  results: data
                 };
+              },
+              cache: true
             },
-            cache: true
-        },
           escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
           minimumInputLength: 4,
           templateResult: formatRepo, // omitted for brevity, see the source of this page
           templateSelection: formatRepoSelection // omitted for brevity, see the source of this page
-      });
+        });
 
-$('.anime-search').change(function(e){
+  $('.movie-search').change(function(e){
 
-        var anime = JSON.parse($(this).val());
-             $('.loading').removeClass('hidden');
-             $('.panel-group').html('');
+    var anime = JSON.parse($(this).val());
+    $('.loading').removeClass('hidden');
+    $('.row').html('');
 
-        window.location.href = "/anime/"+anime.location;
-    });
+    window.location.href = "/anime/"+anime.location;
+  });
 
-function formatRepo(item) {
+  
+
+  $(document).ready(function () {
+            // An example of playing with the Video.js javascript API
+            // Will start the video and then switch the source 3 seconds latter
+            // You can look at the doc there: http://docs.videojs.com/docs/guides/api.html
+            videojs('videoPlay').ready(function () {
+              var myPlayer = this;
+
+              $('.pick').click(function(e){
+                $('.clicked').removeClass('clicked');
+                $(this).addClass('clicked');
+              var episode = $(this).html().split("-");
+                $.ajax({
+                  method: "POST",
+                  url: "/getAnime",
+                  data: {
+                    episode : episode[episode.length-1],
+                    anime : $('.movie-search').text().replace(/\n\s+/g,'')
+                  },
+                  beforeSend: function(){
+                    $('.loading-video').removeClass('hidden');
+                    $('#videoPlay').addClass('hidden');
+                  }
+                })
+                .done(function(file) {
+                    $('.loading-video').addClass('hidden');
+                    $('#videoPlay').removeClass('hidden');
+                  console.log(file);
+                  myPlayer.src({type: 'video/mp4', src: file});
+                });
+              });
+            });
+
+          });
+
+  function formatRepo(item) {
     console.log(item);
     if (item.loading) return item.text;
 
@@ -124,11 +185,11 @@ function formatRepo(item) {
     markup += "</div></div>";
 
     return markup;
-}
+  }
 
-function formatRepoSelection(item) {
+  function formatRepoSelection(item) {
     return item.nama || item.text;
-}
+  }
 
 </script>
 

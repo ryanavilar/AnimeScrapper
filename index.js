@@ -12,7 +12,7 @@ app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
-
+app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
 app.get('/',function(req,res){
@@ -20,25 +20,27 @@ app.get('/',function(req,res){
 
 })
 
-app.get('/anime/:title', function(req, res){
 
     var urlMaster = "http://gogoanime.tv/category/";
     var urlEpisode = "http://gogoanime.tv/";
+
+app.get('/anime/:title', function(req, res){
+
     var anime = req.params.title;
 
     var videos = [];
-    getTotalEpisodes(urlMaster + anime);
+    var episode;
+    getStartEnd(urlMaster + anime).then(function(e){
+        episode = e;
+        return getAnime(urlEpisode + anime+"-episode-"+1,urlEpisode + anime + "-episode-"+1);
+    }).then(function(video){
+        res.render('anime.ejs',{episodes : episode, video : video,name : anime});
+    }).catch(function(err){
+        console.log(err);
+    });
     
-    
-    var sortByKeyz = function(array, key) {
-        return array.sort(function(a, b) {
-            var q = a[key].split("-"); var w = b[key].split("-");
-            var x = parseInt(q[q.length-1]); var y = parseInt(w[w.length-1]);
-            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-        });
-    }
 
-    function getTotalEpisodes(url){
+    function getStartEnd(url){
         var options = {
             uri: url,
             transform: function (body) {
@@ -46,32 +48,21 @@ app.get('/anime/:title', function(req, res){
             }
         };
 
-        request(options).then(function($){
-            var episodes = $('#episode_page').children().children().html();
+        return request(options).then(function($){
+            var episodes = $('#episode_page').children().last().children().html();
+            var array = episodes.split('-');
+            var end = array[1];
+            var episodes = $('#episode_page').children().first().children().html();
             var array = episodes.split('-');
             var start = array[0];
-            var end = array[1];
-            //console.log(end);
-            var arrayPromise = [];
             if(start == 0) start++;
-            for(var i = start; i <= end;i++){
-                if(anime == "danganronpa-3-the-end-of-kibougamine-gakuen-mirai-hen" && i == 12){
-                    var promise = getAnime(urlEpisode + anime,urlEpisode + anime + "-episode-"+i);
-                }else{
-                    var promise = getAnime(urlEpisode + anime + "-episode-"+i,urlEpisode + anime + "-episode-"+i);
-                }
-                arrayPromise.push(promise);
+            var total = []
+            for(var i = start; i <= end; i++){
+                total.push(anime+"-"+i);
             }
-            return Promise.all(arrayPromise).then(function(all){
+            return total;
+        });
 
-                videos = sortByKeyz(videos,"name");
-                res.render('anime.ejs',{videos : videos, name : anime});
-            });
-        }).catch(function(err){
-            console.log(err);
-        })
-
-        
     }
 
     function getAnime(url,name){
@@ -90,8 +81,8 @@ app.get('/anime/:title', function(req, res){
             options.uri = $('.play-video').children().attr('src');
             return request(options)
         }).then(function($){
-            var video = { name : name[name.length-1], file: $('#my-video-player').children().attr('src') };
-            videos.push(video);
+            //var video = { name : name[name.length-1], file: $('#my-video-player').children().attr('src') };
+            return $('#my-video-player').children().attr('src');
         }).catch(function(err){
             console.log(err);
         });
@@ -99,6 +90,40 @@ app.get('/anime/:title', function(req, res){
 
 
 });
+
+app.post('/getAnime',function(req,res){
+
+    var episode = req.body.episode;
+    var anime = req.body.anime;
+    var epiUrl = urlEpisode + anime+"-episode-"+episode;
+    getAnime(epiUrl,epiUrl).then(function(video){
+        res.send(video);
+    })
+
+    function getAnime(url,name){
+        console.log("proses : " + url);
+        console.log(name);
+        var name = name.split("/");
+        var options = {
+            uri: url,
+            transform: function (body) {
+                return cheerio.load(body);
+            }
+        };
+
+        return request(options)
+        .then(function($){
+            options.uri = $('.play-video').children().attr('src');
+            return request(options)
+        }).then(function($){
+            //var video = { name : name[name.length-1], file: $('#my-video-player').children().attr('src') };
+            return $('#my-video-player').children().attr('src');
+        }).catch(function(err){
+            console.log(err);
+        });
+    }
+
+})
 
 app.get('/movies',function(req,res){
     getEpisodes("http://couchtuner2.to/watch-miss-fishers-murder-mysteries-online/").then(function(e){

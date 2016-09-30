@@ -3,66 +3,42 @@ var requestp = require('request-promise');
 var cheerio = require('cheerio');
 
 
-var url = "http://couchtuner2.to/watch-miss-fishers-murder-mysteries-online/";
-request(url, function(error, response, html){
+var url = "http://gogoanime.tv/category/";
+getTotalEpisodes(url + 'inuyasha');
 
-        // First we'll check to make sure no errors occurred when making the request
-
-        if(!error){
-            // Next, we'll utilize the cheerio library on the returned html which will essentially give us jQuery functionality
-
-            var $ = cheerio.load(html);
-            //console.log(html);
-
-            $('.panel-collapse').each(function(i,elem){
-                var z = $(this).children().children().children().children().children().attr("href");
-                var c = z.split(".")[1].split('-');
-                var epic = c[c.length-1]
-                console.log(epic);
-            });
-
-            var a = $('.collapse.in').children().children().children().children().html();
-            var b = a.split(".")[1].split('-');
-            var episode = b[b.length-1]
-            console.log(episode);
-            var epiUrl = "http://couchtuner2.to/stream/miss-fishers-murder-mysteries-"+episode+".html";
-
-            // var newurl = $('iframe').attr('src');
-            request(epiUrl, function(error, response, html){
-                //console.log(html);
-                var $ = cheerio.load(html);
-                $('.domain').each(function(i,elem){
-                    //console.log(elem);
-                    var linkVideo = $(this).children().attr('href');
-                    var videoLocation = $(this).children().html().split(" ");
-                    videoLocation = videoLocation[videoLocation.length-1];
-                    if(videoLocation == "allmyvideos.net"){
-                        getMoviesAllVideos(linkVideo)
-                    }
-                })
-            });
-        }
-    })
-
-    function getMoviesAllVideos(url){
+    function getTotalEpisodes(url){
         var options = {
             uri: url,
             transform: function (body) {
                 return cheerio.load(body);
             }
         };
+
         requestp(options).then(function($){
-            var newurl = $('iframe').attr('src');
-            options.uri = newurl
-            return requestp(options);
-        }).then(function($){
-            var newurl = $('#player_code').children('script').last().html();
-                newurl = newurl.slice(38);
-                newurl = newurl.slice(0,-4);
-                newurl = newurl.replace("$(window).width()", '"W3Schools"');
-                newurl = newurl.replace("$(window).height()", '"W3Schools"');
-                newurl = JSON.parse(newurl);
-                var file = newurl.playlist[0].sources[1].file;
-                console.log(file);
-        })
+            var episodes = $('#episode_page').children().last().children().html();
+            var array = episodes.split('-');
+            var end = array[1];
+            var episodes = $('#episode_page').children().first().children().html();
+            var array = episodes.split('-');
+            var start = array[0];
+            console.log(end);
+            console.log(start);
+            var arrayPromise = [];
+            if(start == 0) start++;
+            for(var i = start; i <= end;i++){
+                if(anime == "danganronpa-3-the-end-of-kibougamine-gakuen-mirai-hen" && i == 12){
+                    var promise = getAnime(urlEpisode + anime,urlEpisode + anime + "-episode-"+i);
+                }else{
+                    var promise = getAnime(urlEpisode + anime + "-episode-"+i,urlEpisode + anime + "-episode-"+i);
+                }
+                arrayPromise.push(promise);
+            }
+            return Promise.all(arrayPromise).then(function(all){
+
+                videos = sortByKeyz(videos,"name");
+                res.render('anime.ejs',{videos : videos, name : anime});
+            });
+        }).catch(function(err){
+            console.log(err);
+        })   
     }
