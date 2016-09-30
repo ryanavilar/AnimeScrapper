@@ -5,6 +5,9 @@ var cheerio = require('cheerio');
 var app     = express();
 
 var bodyParser = require('body-parser')
+
+
+app.set('port', (process.env.PORT || 5000));
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
@@ -118,8 +121,10 @@ app.post('/search',function(req,res){
 
 });
 
-app.listen('8081')
+app.listen(app.get('port'), function() {
+  console.log('Node app is running on port', app.get('port'));
+});
 
-console.log('Magic happens on port 8081');
+
 
 exports = module.exports = app;
