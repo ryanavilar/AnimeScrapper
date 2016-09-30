@@ -100,6 +100,108 @@ app.get('/anime/:title', function(req, res){
 
 });
 
+app.get('/movies',function(req,res){
+    getEpisodes("http://couchtuner2.to/watch-miss-fishers-murder-mysteries-online/").then(function(e){
+        //console.log(e);
+        res.render('movies.ejs',{episodes : e, video : 'empty',name : 'miss-fishers-murder-mysteries'});
+    });
+
+    function getEpisodes(url){
+        var options = {
+            uri: url,
+            transform: function (body) {
+                return cheerio.load(body);
+            }
+        };
+        return request(options).then(function($){
+            var episodes = []
+            $('.panel-collapse').each(function(i,elem){
+                var z = $(this).children().children().children().children().children().attr("href");
+                var c = z.split(".")[1].split('-');
+                var epic = c[c.length-1].split('e');
+                for(var i = 1; i <= epic[epic.length-1];i++){
+                    var epipush = epic[0]+'e'+i;
+                    episodes.push(epipush);
+                }
+            });
+            return episodes;
+        })
+    }
+})
+
+app.post('/getMovies',function(req,res){
+    var episode = req.body.episode;
+    var movie = req.body.movie;
+    var epiUrl = "http://couchtuner2.to/stream/"+movie+"-"+episode+".html";
+    console.log(epiUrl);
+    var options = {
+            uri: epiUrl,
+            transform: function (body) {
+                return cheerio.load(body);
+            }
+        };
+        request(options).then(function($){
+            $('.domain').each(function(i,elem){
+                //console.log(elem);
+                var linkVideo = $(this).children().attr('href');
+                var videoLocation = $(this).children().html().split(" ");
+                videoLocation = videoLocation[videoLocation.length-1];
+                if(videoLocation == "allmyvideos.net"){
+                    console.log(linkVideo);
+                    getMoviesAllVideos(linkVideo)
+                }
+            })
+        });
+
+    //vshare
+    function getMoviesVshare(url){
+        var options = {
+            uri: url,
+            transform: function (body) {
+                return cheerio.load(body);
+            }
+        };
+        request(options).then(function($){
+            var newurl = $('iframe').attr('src');
+            options.url = newurl
+            return request(options);
+        }).then(function($){
+            var newurl = $('#player_code').children('script').last().html();
+            var array = newurl.split('\n');
+            var file = array[1].split("file: ")[1].split(",")[0];
+
+        })
+    }
+
+    // AllVideos
+    function getMoviesAllVideos(url){
+        var options = {
+            uri: url,
+            transform: function (body) {
+                return cheerio.load(body);
+            }
+        };
+        request(options).then(function($){
+            var newurl = $('iframe').attr('src');
+            options.uri = newurl
+            //console.log(newurl);
+            return request(options);
+        }).then(function($){
+                var newurl = $('#player_code').children('script').last().html();
+              //  console.log(newurl);
+                newurl = newurl.slice(38);
+                newurl = newurl.slice(0,-4);
+                newurl = newurl.replace("$(window).width()", '"W3Schools"');
+                newurl = newurl.replace("$(window).height()", '"W3Schools"');
+                newurl = JSON.parse(newurl);
+                var file = newurl.playlist[0].sources[1].file;
+                res.send(file);
+        }).catch(function(error){
+            console.log(error);
+        })
+    }
+});
+
 app.post('/search',function(req,res){
     var search = req.body.q;
     var url = "http://gogoanime.tv//search.html?keyword="+search;
